@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 ruby '2.3.7' #ruby-gemset=railstutorial_rails_4_0
 gem 'rails', '4.0.8'
 group :development, :test do
-  gem 'sqlite3', '1.3.8'
+  gem 'sqlite3', '~> 1.3', '>= 1.3.11'
   gem 'rspec-rails', '2.13.1'
 end
 group :test do
