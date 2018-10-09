@@ -1,10 +1,11 @@
 SampleApp::Application.routes.draw do
-  get "users/new"
+  #get "users/new"
   #get "static_pages/home"
   #get "static_pages/help"
   #get "static_pages/about"
   #get "static_pages/contact"
 
+  resources :users   #Users web resource path
   root 'static_pages#home'      #This creates the root_path
   match '/signup',   to: 'users#new',            via: 'get'  #This creates the signup_path
   match '/help',     to: 'static_pages#help',    via: 'get'  #This creates the help_path
