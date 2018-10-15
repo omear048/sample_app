@@ -14,6 +14,7 @@ describe User do
   it { should respond_to(:password_digest) }
   it { should respond_to(:password) }
   it { should respond_to(:password_confirmation) }
+  it { should respond_to(:remember_token) } #The remember token, used to store a user id in the session for authentication putposes, needs to be stores for future use, so we'll add it to the User model spec check
   it { should respond_to(:authenticate) }
 
 
@@ -107,7 +108,7 @@ describe User do
     
   end
 
- describe "email address with mixed case" do
+  describe "email address with mixed case" do
     let(:mixed_case_email) { "Foo@ExAMPle.CoM" }
     
     it "should be saved as all lower-case" do
@@ -115,6 +116,11 @@ describe User do
       @user.save
       expect(@user.reload.email).to eq mixed_case_email.downcase
     end 
+  end
+
+  describe "remember token" do
+    before { @user.save }
+    its(:remember_token) { should_not be_blank } # equivalent to => it { expect(@user.remember_token).not_to be_blank }
   end
 
 end

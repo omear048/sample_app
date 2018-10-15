@@ -6,16 +6,19 @@ SampleApp::Application.routes.draw do
   #get "static_pages/contact"
 
   resources :users   #Users web resource path
+  resources :sessions, only: [:new, :create, :destroy]
   root 'static_pages#home'      #This creates the root_path
-  match '/signup',   to: 'users#new',            via: 'get'  #This creates the signup_path
-  match '/help',     to: 'static_pages#help',    via: 'get'  #This creates the help_path
-  match '/about',    to: 'static_pages#about',   via: 'get'  #This creates the about_path
-  match '/contact',  to: 'static_pages#contact', via: 'get'  #This creates the contact_path
+  match '/signup',   to: 'users#new',            via: 'get'     #This creates the signup_path
+  match '/signin',   to: 'sessions#new',         via: 'get'     #This creates the signin_path
+  match '/signout',  to: 'sessions#destroy',     via: 'delete'  #This will delete the session; will be invoked by the HTTP DELETE request
+  match '/help',     to: 'static_pages#help',    via: 'get'     #This creates the help_path
+  match '/about',    to: 'static_pages#about',   via: 'get'     #This creates the about_path
+  match '/contact',  to: 'static_pages#contact', via: 'get'     #This creates the contact_path
 
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
-
+ 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
 
