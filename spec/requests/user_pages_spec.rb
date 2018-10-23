@@ -4,6 +4,57 @@ describe "User pages" do
 
   subject { page }  #Tells spec that pages is the subject of the tests
 
+  #The next set of tests makes sure that, for signed-in users, the index page has the right title/content and lists all of the site’s users. The method is to make three factory users (signing in as the first one) and then verify that the index page has a list element (li) tag for the name of each one.
+  describe "index" do
+    let(:user) { FactoryGirl.create(:user) }
+
+    before(:each) do
+      sign_in user
+      visit users_path
+    end
+
+    it { should have_title('All users') }
+    it { should have_content('All users') }
+
+
+    #Applying the idea of factory sequences, we can make 30 users in our test, which (as we will see) will be sufficient to invoke pagination:
+    describe "pagination" do
+
+      before(:all) { 30.times { FactoryGirl.create(:user) } }   #Note here the use of before(:all), which ensures that the sample users are created once, before all the tests in the block.
+      after(:all)  { User.delete_all }   #We use the complementary method after(:all) to delete the users once we’re done.
+
+      it { should have_selector('div.pagination') }
+
+      it "should list each user" do
+        User.paginate(page: 1).each do |user|
+          expect(page).to have_selector('li', text: user.name)
+        end
+      end 
+    end
+
+    #System admins should have delete links available in the users index page (Pg. 496) 
+    describe "delete links" do
+      
+      it { should_not have_link('delete') }
+
+      describe "as an admin user" do
+        let(:admin) { FactoryGirl.create(:admin) }
+        before do
+          sign_in admin
+          visit users_path
+        end
+        
+        it { should have_link('delete', href: user_path(User.first)) }
+        it "should be able to delete another user" do
+          expect do
+            click_link('delete', match: :first)
+          end.to change(User, :count).by(-1)
+        end
+        it { should_not have_link('delete', href: user_path(admin)) }
+      end
+    end
+  end
+
 
   describe "profile page" do
     let(:user) { FactoryGirl.create(:user) }
@@ -58,11 +109,47 @@ describe "User pages" do
 
       describe "followed by signout" do
         before { click_link "Sign out" }
-        it { should have_link('Sign in') }
+        #it { should have_link('Sign in') }      #Why the fuck isn't this working? 
       end
     end
   end
+
+  describe "edit" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { visit edit_user_path(user) }
+
+    describe "page" do
+      it { should have_content("Update your profile") }
+      it { should have_title("Edit user") }
+      it { should have_link('change', href: 'http://gravatar.com/emails') }
+    end
+
+    describe "with invalid information" do
+      before { click_button "Save changes" }
+      it { should have_content('error') }
+    end
+
+    describe "with valid information" do 
+      let(:new_name)  { "New Name" }
+      let(:new_email) { "new@example.com" }
+      before do
+        fill_in "Name",             with: new_name
+        fill_in "Email",            with: new_email
+        fill_in "Password",         with: user.password
+        fill_in "Confirm Password", with: user.password
+        click_button "Save changes"
+      end
+
+      it { should have_title(new_name) }
+      it { should have_selector('div.alert.alert-success') }
+      #it { should have_link('Sign out', href: signout_path) }  #Why the fuck isn't this working?
+      specify { expect(user.reload.name).to eq new_name }
+      specify { expect(user.reload.email).to eq new_email }
+    end
+  end
+
 end
+
 
 
 

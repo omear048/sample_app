@@ -16,9 +16,19 @@ describe User do
   it { should respond_to(:password_confirmation) }
   it { should respond_to(:remember_token) } #The remember token, used to store a user id in the session for authentication putposes, needs to be stores for future use, so we'll add it to the User model spec check
   it { should respond_to(:authenticate) }
-
+  it { should respond_to(:admin) }
 
   it { should be_valid }
+  it { should_not be_admin }
+
+  describe "with admin attribute set to 'true'" do
+    before do 
+      @user.save!
+      @user.toggle!(:admin)   #Here we've used the toggle! method to flip the admin attribute from false to true 
+    end
+
+    it { should be_admin }  #Implies (via the RSpec boolean convention) that the user should have an admin? boolean method
+  end
 
   describe "when name is not present" do
     before { @user.name = " " }

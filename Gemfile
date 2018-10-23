@@ -3,7 +3,10 @@ ruby '2.3.7' #ruby-gemset=railstutorial_rails_4_0
 gem 'rails', '4.0.8'
 gem 'bootstrap-sass', '2.3.2.0'
 gem 'sprockets', '2.11.0'
-gem 'bcrypt-ruby', '3.1.2'  #password gem 
+gem 'bcrypt-ruby', '3.1.2'  #Password gem 
+gem 'faker', '1.1.2'   #Faker gem allows us to make sample users with semi-realistic names and email addresses 
+gem 'will_paginate', '3.0.4' #Pagination of pages
+gem 'bootstrap-will_paginate', '0.0.9'
 
 group :development, :test do
   gem 'sqlite3', '~> 1.3', '>= 1.3.11'

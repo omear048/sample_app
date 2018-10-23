@@ -12,6 +12,7 @@ module SessionsHelper #Available automatically to all views, but had to be added
     !current_user.nil? #current_user is not nil (bang operator) 
   end
 
+  #
   def current_user=(user)
     @current_user = user
   end
@@ -21,12 +22,28 @@ module SessionsHelper #Available automatically to all views, but had to be added
     @current_user ||= User.find_by(remember_token: remember_token)  #Its effect is to set the @current_user instance variable to the user corresponding to the remember token, but only if @current_user is undefined.7 # In other words, the construction calls the find_by method the first time current_user is called, but on sub- sequent invocations returns @current_user without hitting the database.8 This is only useful if current_user is used more than once for a single user request; in any case, find_by will be called at least once every time a user visits a page on the site.
   end           # ||= ("or equals") [pg. 421]
 
+  def current_user?(user)
+    user==current_user
+  end
+
   def sign_out
     current_user.update_attribute(:remember_token,
                                   User.digest(User.new_remember_token))
     cookies.delete(:remember_token)
     self.current_user = nil
   end
+
+
+  #Friendly Forwarding - In order to forward users to their intended destination, we need to store the location of the requested page somewhere, and then redirect to that location instead. We accomplish this with a pair of methods, store_location and redirect_back_or, both defined in the Sessions helper (Listing 9.17). [Pg. 469]
+  def redirect_back_or(default)
+    redirect_to(session[:return_to] || default)   #To implement the forwarding itself, we use the redirect_back_or method to redirect to the requested URL if it exists, or some default URL otherwise, which we add to the Sessions controller create action to redirect after suc- cessful signin (Listing 9.19).
+    session.delete(:return_to)
+  end
+
+  def store_location
+    session[:return_to] = request.url if request.get?
+  end
+
 end
  
 
