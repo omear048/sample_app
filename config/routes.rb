@@ -7,6 +7,7 @@ SampleApp::Application.routes.draw do
 
   resources :users   #Users web resource path
   resources :sessions, only: [:new, :create, :destroy]
+  resources :microposts, only: [:create, :destroy] #(Pg. 541) 
   root 'static_pages#home'      #This creates the root_path
   match '/signup',   to: 'users#new',            via: 'get'     #This creates the signup_path
   match '/signin',   to: 'sessions#new',         via: 'get'     #This creates the signin_path

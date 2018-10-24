@@ -17,6 +17,8 @@ describe User do
   it { should respond_to(:remember_token) } #The remember token, used to store a user id in the session for authentication putposes, needs to be stores for future use, so we'll add it to the User model spec check
   it { should respond_to(:authenticate) }
   it { should respond_to(:admin) }
+  it { should respond_to(:microposts) } #Testing the presence of a Micropost attribute (Pg. 517) 
+  it { should respond_to(:feed) }  #Testing that each user has a feed
 
   it { should be_valid }
   it { should_not be_admin }
@@ -133,6 +135,43 @@ describe User do
     its(:remember_token) { should_not be_blank } # equivalent to => it { expect(@user.remember_token).not_to be_blank }
   end
 
+  #User microposts behavior 
+  describe "micropost associations" do
+    before { @user.save }
+    let!(:older_micropost) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
+    end
+    let!(:newer_micropost) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)
+    end
+
+    #By default, using user.microposts to pull a user’s microposts from the database makes no guarantees about the order of the posts, but (following the convention of blogs and Twitter) we want the microposts to come out in reverse order of when they were created, i.e., most recent first.
+    it "should have the right microposts in the right order" do
+      expect(@user.microposts.to_a).to eq [newer_micropost, older_micropost] #Indicating that the posts should be ordered newest first.
+    end 
+
+
+    #Destruction of Micrposts when User deleted (Pg. 522)
+    it "should destroy associated microposts" do
+      microposts = @user.microposts.to_a
+      @user.destroy
+      expect(microposts).not_to be_empty 
+      microposts.each do |micropost|
+        expect(Micropost.where(id: micropost.id)).to be_empty
+      end
+    end
+
+    describe "status" do
+      let(:unfollowed_post) do
+        FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
+      end
+
+      its(:feed) { should include(newer_micropost) }
+      its(:feed) { should include(older_micropost) }
+      its(:feed) { should_not include(unfollowed_post) } #These tests introduce (via the RSpec boolean convention) the array include? method, which simply checks if an array includes the given element:9 (Pg.557)
+
+    end
+  end
 end
 
 

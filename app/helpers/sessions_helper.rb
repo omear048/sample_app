@@ -26,6 +26,14 @@ module SessionsHelper #Available automatically to all views, but had to be added
     user==current_user
   end
 
+  #Moved here from the users_controller.rb since this method will be used by the users_controller.rb & microposts_controller.rb
+  def signed_in_user
+    unless signed_in?
+      store_location
+      redirect_to signin_url, notice: "Please sign in."
+    end
+  end
+
   def sign_out
     current_user.update_attribute(:remember_token,
                                   User.digest(User.new_remember_token))

@@ -11,8 +11,8 @@ class UsersController < ApplicationController
 
   def show   #When Rails’ REST features are activated, GET requests are automatically handled by the show action
     @user = User.find(params[:id])  #Here we’ve used params to retrieve the user id. When we make the appropriate request to the Users controller, params[:id] will be the user id 1, so the effect is the same as the find method User.find(1) Technically, params[:id] is the string "1", but find is smart enough to convert this to an integer.
+    @microposts = @user.microposts.paginate(page: params[:page])
   end
-
 
   def new
     @user = User.new #The application code uses User.all to pull all the users out of the database
@@ -60,13 +60,6 @@ class UsersController < ApplicationController
 
   #Before filters
 
-  def signed_in_user
-    unless signed_in?
-      store_location
-      redirect_to signin_url, notice: "Please sign in." 
-    end
-  end
-
   def correct_user
     @user = User.find(params[:id])
     redirect_to(root_url) unless current_user?(@user)
@@ -78,7 +71,16 @@ class UsersController < ApplicationController
 
 end
 
+=begin 
+  #Relocated to the sessions_helper.rb since thios method needs to be used in both the ucers_controller.rb & Microposts controller 
+  def signed_in_user
+    unless signed_in?
+      store_location
+      redirect_to signin_url, notice: "Please sign in." 
+    end
+  end
 
+=end
 
 
 

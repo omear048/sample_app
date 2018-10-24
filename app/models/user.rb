@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_many :microposts, dependent: :destroy     #Here the option dependent: :destroy in ... arranges for the dependent microposts (i.e., the ones belonging to the given user) to be destroyed when the user itself is destroyed. (Pg. 525) 
   before_save { self.email = email.downcase }
   before_create :create_remember_token        #This code, called a method reference, arranges for Rails to look for a method called create_remember_token and run it before saving the user
 
@@ -22,6 +23,11 @@ class User < ActiveRecord::Base
 
   def User.digest(token)
     Digest::SHA1.hexdigest(token.to_s)   #We've hashed the remember token using SHA1, a hashing algorithm for security purposes
+  end
+
+  def feed
+    # This is preliminary. See "Following users" for the full implementation.
+    Micropost.where("user_id = ?", id)   #The question mark ensures that id is properly escaped before being included in the underlying SQL query, thereby avoiding a serious security hole called SQL injection. 
   end
 
   private
