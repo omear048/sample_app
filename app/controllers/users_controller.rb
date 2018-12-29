@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  before_action :signed_in_user, only: [:index, :edit, :update, :destroy]  #To require users to be signed in, we define a signed_in_user method and invoke it using before_action :signed_in_user #Why the fuck does this break the spec tests?    #Keeps user from using a patch to change data
+  before_action :signed_in_user, 
+                only: [:index, :edit, :update, :destroy, :following, :followers]  #To require users to be signed in, we define a signed_in_user method and invoke it using before_action :signed_in_user #Why the fuck does this break the spec tests?    #Keeps user from using a patch to change data
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: :destroy           #In principle, there’s still a minor security hole, which is that an admin could delete himself by issuing a DELETE request directly. As you might suspect by now, the application code uses a before filter, this time to restrict access to the destroy action to admins. The resulting admin_user before filter appears in Listing 9.46. (Pg. 501) 
 
@@ -31,7 +32,7 @@ class UsersController < ApplicationController
   end
 
   def edit 
-    #@user = User.find(params[:id])  --Now that the correct_user before filter defines @user, we can omit it from both actions.
+    @user = User.find(params[:id])  #--Now that the correct_user before filter defines @user, we can omit it from both actions.
   end
 
   def update
@@ -49,6 +50,20 @@ class UsersController < ApplicationController
     User.find(params[:id]).destroy     #Note that the destroy action uses method chaining to combine the find and destroy into one line
     flash[:success] = "User deleted."
     redirect_to users_url
+  end
+
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.followed_users.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
   end
 
   private 

@@ -5,9 +5,14 @@ SampleApp::Application.routes.draw do
   #get "static_pages/about"
   #get "static_pages/contact"
 
-  resources :users   #Users web resource path
-  resources :sessions, only: [:new, :create, :destroy]
-  resources :microposts, only: [:create, :destroy] #(Pg. 541) 
+  resources :users  do
+    member do #Pg. 602
+      get :following, :followers #You might suspect that the URLs will look like /users/1/following and /users/1- /followers, and that is exactly what the code in Listing 11.18 does. Since both pages will be showing data, we use get to arrange for the URLs to respond to GET requests (as required by the REST convention for such pages), and the member method means that the routes respond to URLs containing the user id.
+    end
+  end
+  resources :sessions,      only: [:new, :create, :destroy]
+  resources :microposts,    only: [:create, :destroy] #(Pg. 541) 
+  resources :relationships, only: [:create, :destroy] #(Pg. 609)
   root 'static_pages#home'      #This creates the root_path
   match '/signup',   to: 'users#new',            via: 'get'     #This creates the signup_path
   match '/signin',   to: 'sessions#new',         via: 'get'     #This creates the signin_path
