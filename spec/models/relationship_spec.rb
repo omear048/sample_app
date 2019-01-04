@@ -4,7 +4,7 @@ describe Relationship do
 
   let(:follower) {FactoryGirl.create(:user) }
   let(:followed) {FactoryGirl.create(:user) }
-  let(:relationship) { follower.relationships.build(followed_id: followed.id) }
+  let(:relationship) { follower.relationships.build(followed_id: followed.id) } #A user has_many relation- ships, and—since relationships involve two users—a relationship belongs_to both a follower and a followed user.
 
   subject { relationship }
 

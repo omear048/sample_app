@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(version: 20181227215220) do
     t.datetime "updated_at"
   end
 
+  add_index "microposts", ["user_id", "created_at"], name: "index_microposts_on_user_id_and_created_at"
+
   create_table "practices", force: true do |t|
     t.string   "attribute1"
     t.string   "attribute2"

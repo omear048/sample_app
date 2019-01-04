@@ -6,8 +6,8 @@ SampleApp::Application.routes.draw do
   #get "static_pages/contact"
 
   resources :users  do
-    member do #Pg. 602
-      get :following, :followers #You might suspect that the URLs will look like /users/1/following and /users/1- /followers, and that is exactly what the code in Listing 11.18 does. Since both pages will be showing data, we use get to arrange for the URLs to respond to GET requests (as required by the REST convention for such pages), and the member method means that the routes respond to URLs containing the user id.
+    member do #Pg. 602 - and the member method means that the routes respond to URLs containing the user id.
+      get :following, :followers #You might suspect that the URLs will look like /users/1/following and /users/1/followers, and that is exactly what the code in Listing 11.18 does. Since both pages will be showing data, we use get to arrange for the URLs to respond to GET requests (as required by the REST convention for such pages), and the member method means that the routes respond to URLs containing the user id.
     end
   end
   resources :sessions,      only: [:new, :create, :destroy]

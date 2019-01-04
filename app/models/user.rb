@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   has_many :microposts, dependent: :destroy     #Here the option dependent: :destroy in ... arranges for the dependent microposts (i.e., the ones belonging to the given user) to be destroyed when the user itself is destroyed. (Pg. 525) 
   has_many :relationships, foreign_key: "follower_id", dependent: :destroy
   has_many :followed_users, through: :relationships, source: :followed
-  has_many :reverse_relationships, foreign_key: "followed_id",
+  has_many :reverse_relationships, foreign_key: "followed_id", #pg. 597 - As you probably suspect, we will not be making a whole database table just to hold reverse relationships. Instead, we will exploit the underlying symmetry between followers and followed users to simulate a reverse_relationships table by passing followed_id as the primary key. In other words, where the relationships association uses the follower_id foreign key,
                                    class_name: "Relationship", #We actually have to include the class name for this relationship because otherwise Rails would look for a ReverseRelationship class, which doesn't exist 
                                    dependent: :destroy
   has_many :followers, through: :reverse_relationships, source: :follower 
