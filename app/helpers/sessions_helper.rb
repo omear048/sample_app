@@ -54,31 +54,3 @@ module SessionsHelper #Available automatically to all views, but had to be added
 
 end
  
-
-
-
-=begin
-  Now we’re ready to write the first signin element, 
-  the sign_in function itself. As noted above, our 
-  desired authentication method is to place a (newly created) 
-  remember token as a cookie on the user’s browser, 
-  and then use the token to find the user record in 
-  the database as the user moves from page to page 
-  (im- plemented in Section 8.2.3). 
-=end
-
-=begin
-  The problem is that it utterly fails to solve our 
-  problem: with the code in Listing 8.21, the user’s 
-  signin status would be for- gotten: as soon as the 
-  user went to another page—poof!—the session would
-  end and the user would be automatically signed out. 
-  This is due to the stateless nature of HTTP 
-  interactions (Section 8.2.1)—when the user makes 
-  a second request, all the variables get set to their 
-  defaults, which for instance variables like 
-  @current_user is nil. Hence, when a user accesses 
-  another page, even on the same application, 
-  Rails has set @current_user to nil, and the code 
-  in Listing 8.21 won’t do what you want it to do.
-=end
